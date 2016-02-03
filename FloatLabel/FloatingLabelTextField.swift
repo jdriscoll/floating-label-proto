@@ -15,9 +15,6 @@ public class FloatingLabelTextField: UIView {
   @IBInspectable public var label: String?
   @IBInspectable public var value: String?
 
-  @IBInspectable public var labelColor: UIColor?
-  @IBInspectable public var valueColor: UIColor?
-
   @IBInspectable public var active: Bool = false {
     didSet {
       self.configureConstraints()
@@ -25,7 +22,7 @@ public class FloatingLabelTextField: UIView {
         textLabel.textColor = self.tintColor
       }
       else {
-        textLabel.textColor = labelColor ?? UIColor.lightGrayColor()
+        textLabel.textColor = UIColor.lightGrayColor()
       }
     }
   }
@@ -82,7 +79,6 @@ public class FloatingLabelTextField: UIView {
         animations: {
           self.configureConstraints()
           self.textLabel.alpha = self.editing ? 1 : 0
-          self.textLabel.font = self.editing ? UIFont.systemFontOfSize(12) : UIFont.systemFontOfSize(17)
           self.active = self.editing
         },
         completion: { completed in
