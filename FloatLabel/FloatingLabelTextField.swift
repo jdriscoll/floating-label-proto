@@ -10,19 +10,33 @@ import UIKit
 
 public class FloatingLabelTextField: UIView {
 
-  // Interface
+  // MARK - Interface
 
   @IBInspectable public var label: String?
   @IBInspectable public var value: String?
 
-  @IBInspectable public var active: Bool = false
+  @IBInspectable public var labelColor: UIColor?
+  @IBInspectable public var valueColor: UIColor?
+
+  @IBInspectable public var active: Bool = false {
+    didSet {
+      self.configureConstraints()
+      if active {
+        textLabel.textColor = self.tintColor
+      }
+      else {
+        textLabel.textColor = labelColor ?? UIColor.lightGrayColor()
+      }
+    }
+  }
 
   public let textField = UITextField()
   public let textLabel = UILabel()
 
+  // MARK - Lifecyle
+
   required public init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
-    backgroundColor = UIColor.clearColor()
     configureSubviews()
     textLabel.font = UIFont.systemFontOfSize(12)
   }
@@ -55,58 +69,45 @@ public class FloatingLabelTextField: UIView {
     return CGSize(width: width, height: height)
   }
 
-  // Internal
+  // MARK - Internal
 
-  private var editing: Bool = false
+  private var editing: Bool {
+    return self.textField.isFirstResponder()
+  }
 
   private func setEditing(isEditing: Bool, animated: Bool = false) {
-    // guard isEditing != editing else { return }
-
-    editing = isEditing
 
     if (animated) {
-      UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.9, options: [.AllowUserInteraction, .BeginFromCurrentState],
+      UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.7, options: [.AllowUserInteraction, .BeginFromCurrentState],
         animations: {
           self.configureConstraints()
-
           self.textLabel.alpha = self.editing ? 1 : 0
-
-          if self.editing {
-            self.textLabel.textColor = self.tintColor
-          }
-          else {
-            self.textLabel.textColor = UIColor.lightGrayColor()
-          }
-
-          self.layoutIfNeeded()
+          self.textLabel.font = self.editing ? UIFont.systemFontOfSize(12) : UIFont.systemFontOfSize(17)
+          self.active = self.editing
         },
         completion: { completed in
 
       })
     }
     else {
-      self.configureConstraints()
-      self.layoutIfNeeded()
-      self.textLabel.alpha = self.editing ? 1 : 0
-      if self.editing {
-        self.textLabel.textColor = self.tintColor
-      }
-      else {
-        self.textLabel.textColor = UIColor.lightGrayColor()
-      }
+      configureConstraints()
+      layoutIfNeeded()
+      textLabel.alpha = self.editing ? 1 : 0
+      active = editing
     }
   }
 
   private func configureConstraints() {
-    self.textFieldVerticalCenterConstraint?.active = !self.editing
-    self.textLabelVerticalCenterConstraint?.active = !self.editing
+    textFieldVerticalCenterConstraint?.active = !self.editing
+    textLabelVerticalCenterConstraint?.active = !self.editing
 
-    self.textFieldVerticalMarginConstraint?.active = self.editing
-    self.textLabelVerticalMarginConstraint?.active = self.editing
+    textFieldVerticalMarginConstraint?.active = self.editing
+    textLabelVerticalMarginConstraint?.active = self.editing
 
-    self.verticalSpacingConstraint?.active = self.editing
+    verticalSpacingConstraint?.active = self.editing
 
-    self.invalidateIntrinsicContentSize()
+    invalidateIntrinsicContentSize()
+    layoutIfNeeded()
   }
 
   private var textFieldVerticalCenterConstraint: NSLayoutConstraint?
@@ -122,7 +123,6 @@ public class FloatingLabelTextField: UIView {
     guard textField.superview == nil && textLabel.superview == nil else { return }
 
     textLabel.userInteractionEnabled = false
-    textLabel.alpha = 0
 
     textField.delegate = self
 

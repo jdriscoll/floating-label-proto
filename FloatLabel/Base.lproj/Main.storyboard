@@ -22,7 +22,6 @@
                                 <rect key="frame" x="20" y="28" width="560" height="44"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="labelText" value="Full Name"/>
                                     <userDefinedRuntimeAttribute type="string" keyPath="label" value="Full Name"/>
                                     <userDefinedRuntimeAttribute type="string" keyPath="value" value="John Doe"/>
                                 </userDefinedRuntimeAttributes>
@@ -31,7 +30,6 @@
                                 <rect key="frame" x="20" y="80" width="560" height="44"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="labelText" value="Address"/>
                                     <userDefinedRuntimeAttribute type="string" keyPath="label" value="Address"/>
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="active" value="YES"/>
                                 </userDefinedRuntimeAttributes>
