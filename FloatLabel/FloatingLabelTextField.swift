@@ -72,10 +72,10 @@ public class FloatingLabelTextField: UIView {
       textLabel.textColor = UIColor.lightGrayColor()
     }
 
+    //textLabel.backgroundColor = UIColor.redColor()
+
     // If the field has text we always show both
     if let text = textField.text where !text.isEmpty {
-
-      //textLabel.transform = CGAffineTransformMakeScale(0.7, 0.7)
 
       textFieldVerticalCenterConstraint?.active = false
       textLabelVerticalCenterConstraint?.active = false
@@ -85,13 +85,10 @@ public class FloatingLabelTextField: UIView {
 
       verticalSpacingConstraint?.active = true
 
-
+      textLabel.font = UIFont.systemFontOfSize(19)
     }
     // Otherwise we only show the label centered
     else {
-//      if (editing) {
-//        textLabel.transform = CGAffineTransformMakeScale(0.7, 0.7)
-//      }
 
       textFieldVerticalCenterConstraint?.active = !editing
       textLabelVerticalCenterConstraint?.active = !editing
@@ -101,13 +98,18 @@ public class FloatingLabelTextField: UIView {
 
       verticalSpacingConstraint?.active = editing
 
-      // textField.alpha = editing ? 1.0 : 0.0
-
-
+      if (editing) {
+        textLabel.font = UIFont.systemFontOfSize(19)
+      }
+      else {
+        textLabel.font = UIFont.systemFontOfSize(28)
+      }
     }
 
     invalidateIntrinsicContentSize()
     layoutIfNeeded()
+
+    print(textLabel)
   }
 
   private var textFieldVerticalCenterConstraint: NSLayoutConstraint?
@@ -122,7 +124,7 @@ public class FloatingLabelTextField: UIView {
 
     textField.clearButtonMode = .WhileEditing
 
-    textLabel.font = UIFont.systemFontOfSize(19)
+    textLabel.font = UIFont.systemFontOfSize(28)
     textField.font = UIFont.systemFontOfSize(28)
 
     guard textField.superview == nil && textLabel.superview == nil else { return }
@@ -138,7 +140,7 @@ public class FloatingLabelTextField: UIView {
     let views = ["field": textField, "label": textLabel]
 
     addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[field]|", options: .AlignAllBaseline, metrics: nil, views: views))
-    addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[label]|", options: .AlignAllBaseline, metrics: nil, views: views))
+    addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[label]", options: .AlignAllBaseline, metrics: nil, views: views))
 
     // Vertical center constraints
     textFieldVerticalCenterConstraint = NSLayoutConstraint(item: textField, attribute: .CenterY, relatedBy: .Equal, toItem: self, attribute: .CenterY, multiplier: 1, constant: 0)
@@ -159,12 +161,30 @@ public class FloatingLabelTextField: UIView {
 extension FloatingLabelTextField: UITextFieldDelegate {
 
   private func animateTransition() {
-    UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.7, options: [.AllowUserInteraction, .BeginFromCurrentState],
+
+    let editing = textField.isFirstResponder()
+
+    if editing {
+      textLabel.textColor = tintColor
+    }
+    else {
+      textLabel.textColor = UIColor.lightGrayColor()
+    }
+
+    let snapshot = textLabel.snapshotViewAfterScreenUpdates(true)
+    snapshot.frame = textLabel.frame
+    textLabel.hidden = true
+
+    addSubview(snapshot)
+
+    UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.9, options: [.AllowUserInteraction, .BeginFromCurrentState],
       animations: {
         self.configureLayout()
+        snapshot.frame = self.textLabel.frame
       },
       completion: { completed in
-
+        snapshot.removeFromSuperview()
+        self.textLabel.hidden = false
     })
   }
 
