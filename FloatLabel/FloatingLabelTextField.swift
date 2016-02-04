@@ -12,18 +12,17 @@ public class FloatingLabelTextField: UIView {
 
   // MARK - Interface
 
-  @IBInspectable public var label: String?
-  @IBInspectable public var value: String?
-
-  @IBInspectable public var active: Bool = false {
+  @IBInspectable public var label: String? {
     didSet {
-      self.configureConstraints()
-      if active {
-        textLabel.textColor = self.tintColor
-      }
-      else {
-        textLabel.textColor = UIColor.lightGrayColor()
-      }
+      textLabel.text = label
+      configureLayout()
+    }
+  }
+
+  @IBInspectable public var value: String? {
+    didSet {
+      textField.text = value
+      configureLayout()
     }
   }
 
@@ -35,7 +34,6 @@ public class FloatingLabelTextField: UIView {
   required public init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     configureSubviews()
-    textLabel.font = UIFont.systemFontOfSize(12)
   }
 
   override public init(frame: CGRect) {
@@ -45,12 +43,7 @@ public class FloatingLabelTextField: UIView {
 
   public override func awakeFromNib() {
     super.awakeFromNib()
-
-    textLabel.text = label
-    textField.placeholder = label
-    textField.text = value
-
-    if active { textField.becomeFirstResponder() }
+    backgroundColor = UIColor.clearColor()
   }
 
   public override func intrinsicContentSize() -> CGSize {
@@ -68,39 +61,50 @@ public class FloatingLabelTextField: UIView {
 
   // MARK - Internal
 
-  private var editing: Bool {
-    return self.textField.isFirstResponder()
-  }
+  private func configureLayout() {
 
-  private func setEditing(isEditing: Bool, animated: Bool = false) {
+    let editing = textField.isFirstResponder()
 
-    if (animated) {
-      UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.7, options: [.AllowUserInteraction, .BeginFromCurrentState],
-        animations: {
-          self.configureConstraints()
-          self.textLabel.alpha = self.editing ? 1 : 0
-          self.active = self.editing
-        },
-        completion: { completed in
-
-      })
+    if editing {
+      textLabel.textColor = tintColor
     }
     else {
-      configureConstraints()
-      layoutIfNeeded()
-      textLabel.alpha = self.editing ? 1 : 0
-      active = editing
+      textLabel.textColor = UIColor.lightGrayColor()
     }
-  }
 
-  private func configureConstraints() {
-    textFieldVerticalCenterConstraint?.active = !self.editing
-    textLabelVerticalCenterConstraint?.active = !self.editing
+    // If the field has text we always show both
+    if let text = textField.text where !text.isEmpty {
 
-    textFieldVerticalMarginConstraint?.active = self.editing
-    textLabelVerticalMarginConstraint?.active = self.editing
+      //textLabel.transform = CGAffineTransformMakeScale(0.7, 0.7)
 
-    verticalSpacingConstraint?.active = self.editing
+      textFieldVerticalCenterConstraint?.active = false
+      textLabelVerticalCenterConstraint?.active = false
+
+      textFieldVerticalMarginConstraint?.active = true
+      textLabelVerticalMarginConstraint?.active = true
+
+      verticalSpacingConstraint?.active = true
+
+
+    }
+    // Otherwise we only show the label centered
+    else {
+//      if (editing) {
+//        textLabel.transform = CGAffineTransformMakeScale(0.7, 0.7)
+//      }
+
+      textFieldVerticalCenterConstraint?.active = !editing
+      textLabelVerticalCenterConstraint?.active = !editing
+
+      textFieldVerticalMarginConstraint?.active = editing
+      textLabelVerticalMarginConstraint?.active = editing
+
+      verticalSpacingConstraint?.active = editing
+
+      // textField.alpha = editing ? 1.0 : 0.0
+
+
+    }
 
     invalidateIntrinsicContentSize()
     layoutIfNeeded()
@@ -116,9 +120,10 @@ public class FloatingLabelTextField: UIView {
 
   private func configureSubviews() {
 
-    guard textField.superview == nil && textLabel.superview == nil else { return }
+    textLabel.font = UIFont.systemFontOfSize(12)
+    textField.font = UIFont.systemFontOfSize(17)
 
-    textLabel.userInteractionEnabled = false
+    guard textField.superview == nil && textLabel.superview == nil else { return }
 
     textField.delegate = self
 
@@ -145,17 +150,27 @@ public class FloatingLabelTextField: UIView {
 
     addConstraints([textFieldVerticalCenterConstraint!, textLabelVerticalCenterConstraint!, textFieldVerticalMarginConstraint!, textLabelVerticalMarginConstraint!, verticalSpacingConstraint!])
 
-    setEditing(false)
+    configureLayout()
   }
 }
 
 extension FloatingLabelTextField: UITextFieldDelegate {
 
+  private func animateTransition() {
+    UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.7, options: [.AllowUserInteraction, .BeginFromCurrentState],
+      animations: {
+        self.configureLayout()
+      },
+      completion: { completed in
+
+    })
+  }
+
   public func textFieldDidBeginEditing(textField: UITextField) {
-    setEditing(true, animated: true)
+    animateTransition()
   }
 
   public func textFieldDidEndEditing(textField: UITextField) {
-    setEditing(false, animated: true)
+    animateTransition()
   }
 }

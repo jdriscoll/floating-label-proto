@@ -31,7 +31,7 @@
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="label" value="Address"/>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="active" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="value" value=""/>
                                 </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
