@@ -120,8 +120,10 @@ public class FloatingLabelTextField: UIView {
 
   private func configureSubviews() {
 
-    textLabel.font = UIFont.systemFontOfSize(12)
-    textField.font = UIFont.systemFontOfSize(17)
+    textField.clearButtonMode = .WhileEditing
+
+    textLabel.font = UIFont.systemFontOfSize(19)
+    textField.font = UIFont.systemFontOfSize(28)
 
     guard textField.superview == nil && textLabel.superview == nil else { return }
 
