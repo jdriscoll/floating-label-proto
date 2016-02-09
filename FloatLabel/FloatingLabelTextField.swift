@@ -85,7 +85,7 @@ public class FloatingLabelTextField: UIView {
 
       verticalSpacingConstraint?.active = true
 
-      textLabel.font = UIFont.systemFontOfSize(19)
+      //textLabel.font = UIFont.systemFontOfSize(19)
     }
     // Otherwise we only show the label centered
     else {
@@ -98,18 +98,16 @@ public class FloatingLabelTextField: UIView {
 
       verticalSpacingConstraint?.active = editing
 
-      if (editing) {
-        textLabel.font = UIFont.systemFontOfSize(19)
-      }
-      else {
-        textLabel.font = UIFont.systemFontOfSize(28)
-      }
+//      if (editing) {
+//        textLabel.font = UIFont.systemFontOfSize(19)
+//      }
+//      else {
+//        textLabel.font = UIFont.systemFontOfSize(28)
+//      }
     }
 
     invalidateIntrinsicContentSize()
     layoutIfNeeded()
-
-    print(textLabel)
   }
 
   private var textFieldVerticalCenterConstraint: NSLayoutConstraint?
@@ -124,8 +122,10 @@ public class FloatingLabelTextField: UIView {
 
     textField.clearButtonMode = .WhileEditing
 
-    textLabel.font = UIFont.systemFontOfSize(28)
-    textField.font = UIFont.systemFontOfSize(28)
+//    textLabel.font = UIFont.systemFontOfSize(28)
+//    textField.font = UIFont.systemFontOfSize(28)
+
+    preferredContentSizeDidChange(UIApplication.sharedApplication().preferredContentSizeCategory)
 
     guard textField.superview == nil && textLabel.superview == nil else { return }
 
@@ -156,6 +156,22 @@ public class FloatingLabelTextField: UIView {
 
     configureLayout()
   }
+
+  override func preferredContentSizeCategoryDidChange(newPreferredSize: NSString) {
+    switch newPreferredSize {
+    case UIContentSizeCategoryMedium:
+      textLabel.font = UIFont.systemFontOfSize(28)
+      textField.font = UIFont.systemFontOfSize(28)
+    case UIContentSizeCategoryLarge:
+      textLabel.font = UIFont.systemFontOfSize(48)
+      textField.font = UIFont.systemFontOfSize(48)
+    default:
+      textLabel.font = UIFont.systemFontOfSize(18)
+      textField.font = UIFont.systemFontOfSize(18)
+    }
+
+    configureLayout()
+  }
 }
 
 extension FloatingLabelTextField: UITextFieldDelegate {
@@ -177,7 +193,7 @@ extension FloatingLabelTextField: UITextFieldDelegate {
 
     addSubview(snapshot)
 
-    UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.9, options: [.AllowUserInteraction, .BeginFromCurrentState],
+    UIView.animateWithDuration(0.2, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.9, options: [.AllowUserInteraction, .BeginFromCurrentState],
       animations: {
         self.configureLayout()
         snapshot.frame = self.textLabel.frame

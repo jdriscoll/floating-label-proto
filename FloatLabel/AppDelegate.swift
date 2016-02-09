@@ -15,8 +15,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "preferredContentSizeDidChange:", name: UIContentSizeCategoryDidChangeNotification, object: nil)
     // Override point for customization after application launch.
     return true
+  }
+
+  func preferredContentSizeDidChange(notif: NSNotification) {
+    if let newPreferredSize = notif.userInfo?[UIContentSizeCategoryNewValueKey] as? NSString {
+      for window in UIApplication.sharedApplication().windows {
+        window.preferredContentSizeCategoryDidChange(newPreferredSize)
+      }
+    }
   }
 
   func applicationWillResignActive(application: UIApplication) {
